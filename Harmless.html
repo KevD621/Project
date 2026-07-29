@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cybersecurity Awareness – Simulation</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0b0e14;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      max-width: 800px;
+      width: 100%;
+      background: #1a1f2b;
+      border: 2px solid #00ffcc;
+      border-radius: 20px;
+      padding: 30px 25px;
+      box-shadow: 0 0 40px rgba(0, 255, 204, 0.15);
+      transition: all 0.3s;
+    }
+    h1 {
+      color: #00ffcc;
+      font-size: 2rem;
+      text-align: center;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(0,255,204,0.3);
+    }
+    .badge {
+      display: inline-block;
+      background: #ff3366;
+      color: #fff;
+      font-weight: bold;
+      padding: 4px 16px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      margin: 0 auto 20px;
+      text-align: center;
+      width: fit-content;
+    }
+    .consent-box {
+      background: #10141e;
+      border-left: 4px solid #ffaa00;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    .consent-box p {
+      color: #cfd7e6;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+    .consent-box strong {
+      color: #ffaa00;
+    }
+    .btn {
+      background: #00ffcc;
+      color: #0b0e14;
+      border: none;
+      font-size: 1.2rem;
+      font-weight: bold;
+      padding: 14px 30px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: inherit;
+      width: 100%;
+      margin-top: 10px;
+      letter-spacing: 1px;
+    }
+    .btn:hover {
+      background: #66ffdd;
+      transform: scale(1.01);
+      box-shadow: 0 0 25px #00ffcc88;
+    }
+    .btn:disabled {
+      opacity: 0.4;
+      transform: none;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Simulation screen (hidden by default) */
+    #simulation {
+      display: none;
+      flex-direction: column;
+      gap: 15px;
+    }
+    #simulation.active {
+      display: flex;
+    }
+    #consent-section {
+      display: block;
+    }
+    #consent-section.hidden {
+      display: none;
+    }
+
+    .terminal {
+      background: #0b0e14;
+      border: 1px solid #2a3440;
+      border-radius: 12px;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #7fdbca;
+      max-height: 300px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.7;
+      font-family: 'Courier New', monospace;
+    }
+    .terminal .red { color: #ff6b6b; }
+    .terminal .green { color: #69db7c; }
+    .terminal .yellow { color: #ffd93d; }
+    .terminal .cyan { color: #66d9e8; }
+    .blink { animation: blink 1s step-end infinite; }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .alert-popup {
+      background: #2a1a2a;
+      border: 2px solid #ff3366;
+      border-radius: 12px;
+      padding: 20px;
+      color: #ffb3b3;
+      text-align: center;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .alert-popup h2 { color: #ff3366; margin-bottom: 6px; }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 5px #ff336655; }
+      50% { box-shadow: 0 0 30px #ff3366aa; }
+      100% { box-shadow: 0 0 5px #ff336655; }
+    }
+
+    .debrief {
+      background: #1a262e;
+      border-radius: 12px;
+      padding: 18px;
+      color: #b0c7d9;
+      font-size: 0.95rem;
+    }
+    .debrief strong { color: #66d9e8; }
+
+    .footer-note {
+      text-align: center;
+      color: #5a6a7a;
+      font-size: 0.8rem;
+      margin-top: 18px;
+      border-top: 1px solid #2a3440;
+      padding-top: 14px;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  
+  <!-- ========== CONSENT SECTION ========== -->
+  <div id="consent-section">
+    <h1>🛡️ CYBER SHIELD</h1>
+    <div style="text-align: center;"><span class="badge">🔬 EDUCATIONAL SIMULATION</span></div>
+    
+    <div class="consent-box">
+      <p><strong>⚠️ THIS IS A SAFE SIMULATION – NOT REAL HACKING</strong></p>
+      <p>
+        This page demonstrates common <strong>scareware tactics</strong> used by attackers.
+        You will see fake system alerts, a "scanning" terminal, and a simulated breach.
+        <br/><br/>
+        <strong>Nothing is installed, no data is collected, and your device is 100% safe.</strong>
+        <br/><br/>
+        By clicking <em>"I Consent – Start Simulation"</em> you agree to participate in this
+        cybersecurity awareness exercise.
+      </p>
+    </div>
+    
+    <button class="btn" id="consentBtn">✅ I Consent – Start Simulation</button>
+    <div class="footer-note">Built for ethical security education · No real exploits</div>
+  </div>
+
+  <!-- ========== SIMULATION SECTION (hidden initially) ========== -->
+  <div id="simulation">
+    <h1>⚠️ SYSTEM SCAN</h1>
+    <div style="text-align: center;"><span class="badge" style="background:#ff8800;">🚨 SIMULATION MODE</span></div>
+
+    <!-- Fake terminal output -->
+    <div class="terminal" id="terminal">
+      <span class="cyan">[•] Initializing secure scan...</span>
+      <span class="yellow">[•] Checking for known vulnerabilities...</span>
+      <span class="green">[•] 127.0.0.1 – port 22 open</span>
+      <span class="green">[•] 127.0.0.1 – port 443 open</span>
+      <span class="red">[!] Suspicious outbound connection detected → 45.33.22.11</span>
+      <span class="yellow">[•] Attempting to identify payload...</span>
+      <span class="red">[!] CRITICAL: FakeRansomware variant "EDUCATION" found</span>
+      <span class="cyan">[•] Simulating encryption process... </span>
+      <span class="green">[✓] Simulation complete – no actual changes made.</span>
+      <span class="blink">▌</span>
+    </div>
+
+    <!-- Fake alert popup -->
+    <div class="alert-popup" id="alertPopup">
+      <h2>🚫 SIMULATED BREACH DETECTED</h2>
+      <p style="font-size:0.95rem;">This is a <strong>demonstration</strong> – your device is <u>not</u> compromised.</p>
+      <p style="font-size:0.85rem; opacity:0.8;">In a real attack, you'd see pressure tactics like this.</p>
+    </div>
+
+    <!-- Educational debrief -->
+    <div class="debrief">
+      <strong>📘 What you just experienced:</strong><br/>
+      • <strong>Fake system alerts</strong> – used to create panic.<br/>
+      • <strong>Fake terminal logs</strong> – look technical to confuse you.<br/>
+      • <strong>Urgency</strong> – designed to make you act without thinking.<br/><br/>
+      <strong>✅ How to protect yourself:</strong><br/>
+      ① Never call numbers from pop‑ups – they're scammers.<br/>
+      ② Don't pay any "ransom" – it's always a bluff.<br/>
+      ③ Run a real antivirus scan if you're ever unsure.<br/>
+      ④ Use a tool like <strong>CyberShield</strong> to check suspicious URLs.
+    </div>
+
+    <button class="btn" id="resetBtn" style="background:#ffaa00; color:#0b0e14; margin-top:10px;">
+      🔄 Run Simulation Again
+    </button>
+    <div class="footer-note">This simulation is for education · No malware or data collection</div>
+  </div>
+
+</div>
+
+<script>
+  (function() {
+    const consentSection = document.getElementById('consent-section');
+    const simulationDiv = document.getElementById('simulation');
+    const consentBtn = document.getElementById('consentBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const terminal = document.getElementById('terminal');
+
+    // Function to reset terminal to initial state
+    function resetTerminal() {
+      terminal.innerHTML = `
+        <span class="cyan">[•] Initializing secure scan...</span>
+        <span class="yellow">[•] Checking for known vulnerabilities...</span>
+        <span class="green">[•] 127.0.0.1 – port 22 open</span>
+        <span class="green">[•] 127.0.0.1 – port 443 open</span>
+        <span class="red">[!] Suspicious outbound connection detected → 45.33.22.11</span>
+        <span class="yellow">[•] Attempting to identify payload...</span>
+        <span class="red">[!] CRITICAL: FakeRansomware variant "EDUCATION" found</span>
+        <span class="cyan">[•] Simulating encryption process... </span>
+        <span class="green">[✓] Simulation complete – no actual changes made.</span>
+        <span class="blink">▌</span>
+      `;
+    }
+
+    // Show simulation, hide consent
+    function startSimulation() {
+      consentSection.classList.add('hidden');
+      simulationDiv.classList.add('active');
+      resetTerminal();
+      // Scroll to top of card
+      document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Reset to consent view
+    function resetToConsent() {
+      simulationDiv.classList.remove('active');
+      consentSection.classList.remove('hidden');
+      // Reset terminal for next time
+      resetTerminal();
+      document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    consentBtn.addEventListener('click', startSimulation);
+    resetBtn.addEventListener('click', startSimulation); // re-run = same as start
+
+    // Optional: keyboard shortcut (press 'R' to reset)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'r' || e.key === 'R') {
+        if (simulationDiv.classList.contains('active')) {
+          startSimulation();
+        }
+      }
+    });
+
+    // If user tries to leave the page, show a gentle reminder (optional)
+    window.addEventListener('beforeunload', (e) => {
+      if (simulationDiv.classList.contains('active')) {
+        // This is a standard practice for demos – but we keep it mild.
+        e.preventDefault();
+        e.returnValue = 'You are leaving the simulation – it was just a demo!';
+      }
+    });
+  })();
+</script>
+
+</body>
+</html>

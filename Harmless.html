@@ -176,13 +176,13 @@
       word-break: break-word;
     }
 
-    /* Cursor blink */
+    /* Cursor blink – faster blink */
     .cursor {
       display: inline-block;
       width: 10px;
       height: 1.2rem;
       background: #00cc44;
-      animation: blink 0.6s step-end infinite;
+      animation: blink 0.4s step-end infinite;
       vertical-align: text-bottom;
       margin-left: 2px;
     }
@@ -197,7 +197,7 @@
     #terminal::-webkit-scrollbar-thumb { background: #1a4a2a; border-radius: 4px; }
     #terminal::-webkit-scrollbar-thumb:hover { background: #2a6a3a; }
 
-    /* ── BLACKOUT OVERLAY ── */
+    /* ── BLACKOUT OVERLAY (no URL button) ── */
     #blackout {
       position: fixed;
       top: 0;
@@ -237,46 +237,6 @@
       animation: blink 1s step-end infinite;
     }
 
-    /* ─── URL BUTTON ─── */
-    #url-container {
-      margin-top: 50px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    #url-container .url-label {
-      color: #445566;
-      font-size: 0.8rem;
-      letter-spacing: 1px;
-      font-family: 'Courier New', monospace;
-    }
-
-    .btn-url {
-      background: transparent;
-      color: #00cc44;
-      border: 1px solid #2a5a3a;
-      font-size: 1rem;
-      font-weight: 400;
-      padding: 12px 28px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: 'Courier New', monospace;
-      transition: all 0.3s ease;
-      letter-spacing: 1px;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .btn-url:hover {
-      background: #0a1a0a;
-      border-color: #00cc44;
-      box-shadow: 0 0 30px rgba(0, 204, 68, 0.15);
-      color: #00ff55;
-      transform: scale(1.02);
-    }
-    .btn-url:active { transform: scale(0.95); }
-
     /* ── Responsive ── */
     @media (max-width: 700px) {
       #app { padding: 20px 24px; }
@@ -291,7 +251,6 @@
       #terminal { font-size: 0.75rem; line-height: 1.7; }
       .consent-box p { font-size: 0.9rem; }
       #blackout h1 { font-size: 2rem; }
-      .btn-url { font-size: 0.8rem; padding: 10px 20px; }
     }
   </style>
 </head>
@@ -301,17 +260,6 @@
 <div id="blackout">
   <h1>你被黑了，V我50</h1>
   <div class="sub-text">█ █ █ SYSTEM COMPROMISED █ █ █</div>
-
-  <!-- URL Button -->
-  <div id="url-container">
-    <span class="url-label">▼ access this simulation ▼</span>
-    <a href="https://KevD621.github.io/Project/Harmless.html" target="_blank" class="btn-url">
-      ▶ https://KevD621.github.io/Project/Harmless.html
-    </a>
-    <span class="url-label" style="font-size:0.65rem; color:#2a3a3a; margin-top:4px;">
-      click to open in new tab · press R to reset
-    </span>
-  </div>
 </div>
 
 <!-- ─── MAIN APP ─── -->
@@ -451,6 +399,10 @@
       let charIndex = 0;
       let textContent = '';
 
+      // 🚀 FAST TYPING – 6ms per character, 20ms between lines
+      const CHAR_DELAY = 6;
+      const LINE_DELAY = 20;
+
       function addChar() {
         if (charIndex >= fullText.length) {
           if (cursorSpan) {
@@ -474,7 +426,7 @@
         div.appendChild(cursorSpan);
 
         charIndex++;
-        const id = setTimeout(addChar, 40); // smooth typing speed
+        const id = setTimeout(addChar, CHAR_DELAY);
         charTimeouts.push(id);
       }
 
@@ -497,20 +449,21 @@
       resetAll();
 
       let lineIndex = 0;
+      const LINE_DELAY = 20;
 
       function typeNextLine() {
         if (lineIndex >= scanLines.length) {
           statusBadge.textContent = '● compromised';
           statusBadge.style.color = '#ff4444';
-          triggerBlackout();
+          const id = setTimeout(triggerBlackout, 600);
+          timeoutIds.push(id);
           return;
         }
 
         const line = scanLines[lineIndex];
         typeLine(line, () => {
           lineIndex++;
-          // Slight pause between lines
-          const id = setTimeout(typeNextLine, 150);
+          const id = setTimeout(typeNextLine, LINE_DELAY);
           timeoutIds.push(id);
         });
       }
@@ -531,7 +484,7 @@
           blackout.classList.add('active');
           app.style.display = 'none';
         }, 800);
-      }, 1200);
+      }, 400);
       timeoutIds.push(id);
     }
 
@@ -558,11 +511,8 @@
     // ─── Event listeners ───
     consentBtn.addEventListener('click', startSimulation);
 
-    // Click on blackout to reset (but not if clicking the URL button)
-    blackout.addEventListener('click', (e) => {
-      if (e.target.classList.contains('btn-url') || e.target.closest('.btn-url')) {
-        return;
-      }
+    // Click on blackout to reset
+    blackout.addEventListener('click', () => {
       resetToConsent();
     });
 
@@ -582,3 +532,8 @@
 
 </body>
 </html>
+
+<!-- ════════════════════════════════════════════════════════════════ -->
+<!--  URL: https://KevD621.github.io/Project/Harmless.html          -->
+<!--  Copy this link to share or bookmark the simulation.          -->
+<!-- ════════════════════════════════════════════════════════════════ -->

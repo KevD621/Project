@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Security Assessment – Simulation</title>
   <style>
-    /* ── Full reset – no margins, no scrollbars ── */
+    /* ── Full reset ── */
     * {
       margin: 0;
       padding: 0;
@@ -29,7 +29,7 @@
       flex-direction: column;
       padding: 30px 40px;
       position: relative;
-      transition: background 0.8s ease;
+      transition: opacity 0.8s ease;
     }
 
     /* ── Consent Section ── */
@@ -176,7 +176,7 @@
       word-break: break-word;
     }
 
-    /* Cursor blink effect */
+    /* Cursor blink */
     .cursor {
       display: inline-block;
       width: 10px;
@@ -210,7 +210,6 @@
       align-items: center;
       z-index: 9999;
       flex-direction: column;
-      transition: opacity 0.5s ease;
     }
     #blackout.active {
       display: flex;
@@ -238,6 +237,46 @@
       animation: blink 1s step-end infinite;
     }
 
+    /* ─── URL BUTTON (appears at the bottom of blackout) ─── */
+    #url-container {
+      margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #url-container .url-label {
+      color: #445566;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .btn-url {
+      background: transparent;
+      color: #00cc44;
+      border: 1px solid #2a5a3a;
+      font-size: 1rem;
+      font-weight: 400;
+      padding: 12px 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-url:hover {
+      background: #0a1a0a;
+      border-color: #00cc44;
+      box-shadow: 0 0 30px rgba(0, 204, 68, 0.15);
+      color: #00ff55;
+      transform: scale(1.02);
+    }
+    .btn-url:active { transform: scale(0.95); }
+
     /* ── Responsive ── */
     @media (max-width: 700px) {
       #app { padding: 20px 24px; }
@@ -252,6 +291,7 @@
       #terminal { font-size: 0.75rem; line-height: 1.7; }
       .consent-box p { font-size: 0.9rem; }
       #blackout h1 { font-size: 2rem; }
+      .btn-url { font-size: 0.8rem; padding: 10px 20px; }
     }
   </style>
 </head>
@@ -261,6 +301,17 @@
 <div id="blackout">
   <h1>你被黑了，V我50</h1>
   <div class="sub-text">█ █ █ SYSTEM COMPROMISED █ █ █</div>
+
+  <!-- URL Button -->
+  <div id="url-container">
+    <span class="url-label">▼ access this simulation ▼</span>
+    <a href="https://KevD621.github.io/Project/Harmless.html" target="_blank" class="btn-url">
+      ▶ https://KevD621.github.io/Project/Harmless.html
+    </a>
+    <span class="url-label" style="font-size:0.65rem; color:#2a3a3a; margin-top:4px;">
+      click to open in new tab · press R to reset
+    </span>
+  </div>
 </div>
 
 <!-- ─── MAIN APP ─── -->
@@ -304,7 +355,7 @@
     const consentBtn = document.getElementById('consentBtn');
     const blackout = document.getElementById('blackout');
 
-    // ─── CODE TO TYPE OUT (looks like real C++/Python hacking code) ───
+    // ─── CODE TO TYPE OUT ───
     const codeLines = [
       { text: '#include <iostream>', cls: 'info' },
       { text: '#include <vector>', cls: 'info' },
@@ -373,13 +424,13 @@
       blackout.classList.remove('active');
       blackout.style.display = 'none';
       document.getElementById('app').style.display = 'flex';
+      document.getElementById('app').style.opacity = '1';
     }
 
     // ─── Type out a single line character by character ───
     function typeLine(lineData, callback) {
       const fullText = lineData.text;
       if (fullText === '') {
-        // Empty line – just add a line break
         const div = document.createElement('div');
         div.className = 'line';
         div.innerHTML = '&nbsp;';
@@ -399,12 +450,10 @@
 
       function addChar() {
         if (charIndex >= fullText.length) {
-          // Remove cursor when done
           if (cursorSpan) {
             cursorSpan.remove();
             cursorSpan = null;
           }
-          // Apply color class to the whole line
           div.style.color = getColorForClass(lineData.cls);
           callback();
           return;
@@ -413,7 +462,6 @@
         textContent += fullText[charIndex];
         div.textContent = textContent;
 
-        // Add cursor at the end
         if (cursorSpan) {
           cursorSpan.remove();
           cursorSpan = null;
@@ -423,11 +471,10 @@
         div.appendChild(cursorSpan);
 
         charIndex++;
-        const id = setTimeout(addChar, 45); // speed of typing
+        const id = setTimeout(addChar, 45);
         charTimeouts.push(id);
       }
 
-      // Start typing this line
       addChar();
     }
 
@@ -449,7 +496,6 @@
 
       function typeNextLine() {
         if (lineIndex >= codeLines.length) {
-          // All code typed – trigger blackout
           statusBadge.textContent = '● executed';
           statusBadge.style.color = '#ff4444';
           triggerBlackout();
@@ -459,7 +505,6 @@
         const line = codeLines[lineIndex];
         typeLine(line, () => {
           lineIndex++;
-          // Slight pause between lines
           const id = setTimeout(typeNextLine, 180);
           timeoutIds.push(id);
         });
@@ -469,16 +514,13 @@
       typeNextLine();
     }
 
-    // ─── Trigger the blackout with red text ───
+    // ─── Trigger the blackout ───
     function triggerBlackout() {
-      // Wait a moment before blackout
       const id = setTimeout(() => {
-        // Fade app to black
         const app = document.getElementById('app');
         app.style.transition = 'opacity 1.5s ease';
         app.style.opacity = '0';
 
-        // Show blackout overlay
         setTimeout(() => {
           blackout.style.display = 'flex';
           blackout.classList.add('active');
@@ -512,17 +554,20 @@
     consentBtn.addEventListener('click', startSimulation);
 
     // Click on blackout to reset
-    blackout.addEventListener('click', () => {
+    blackout.addEventListener('click', (e) => {
+      // Don't reset if they clicked the URL button
+      if (e.target.classList.contains('btn-url') || e.target.closest('.btn-url')) {
+        return;
+      }
       resetToConsent();
     });
 
-    // Also allow reset via keyboard (press 'R' or 'r')
+    // Keyboard: 'R' to reset
     document.addEventListener('keydown', (e) => {
       if (e.key === 'r' || e.key === 'R') {
         if (blackout.classList.contains('active')) {
           resetToConsent();
         } else if (simulationDiv.classList.contains('active')) {
-          // If simulation is running but not blacked out, reset
           resetToConsent();
         }
       }

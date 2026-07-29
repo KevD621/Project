@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Security Assessment – Simulation</title>
+  <title>Security Assessment – Penetration Test</title>
   <style>
     /* ── Full reset ── */
     * {
@@ -237,7 +237,7 @@
       animation: blink 1s step-end infinite;
     }
 
-    /* ─── URL BUTTON (appears at the bottom of blackout) ─── */
+    /* ─── URL BUTTON ─── */
     #url-container {
       margin-top: 50px;
       display: flex;
@@ -321,11 +321,12 @@
   <div id="consent-section">
     <div class="logo">▶ <span>SecuraSim</span></div>
     <div class="badge">● educational simulation</div>
-    <h1><strong>Security Assessment</strong> · v3.0</h1>
+    <h1><strong>Penetration Test</strong> · v4.0</h1>
     <div class="consent-box">
       <p>
-        This is a <span class="highlight">controlled demonstration</span> of a security
-        scanning tool. You will see a live terminal with simulated code execution.
+        This is a <span class="highlight">controlled demonstration</span> of a network
+        penetration testing tool. You will see a live terminal simulating port scans,
+        vulnerability discovery, and system access.
         <br/><br/>
         <strong>No data is collected</strong> – your device is completely safe.
         This is purely for cybersecurity awareness.
@@ -338,8 +339,8 @@
   <!-- ===== SIMULATION SECTION ===== -->
   <div id="simulation">
     <div class="sim-header">
-      <h2>▶ code execution terminal</h2>
-      <span class="status-badge" id="statusBadge">● compiling</span>
+      <h2>▶ network assessment terminal</h2>
+      <span class="status-badge" id="statusBadge">● scanning</span>
     </div>
     <div id="terminal"></div>
   </div>
@@ -355,59 +356,62 @@
     const consentBtn = document.getElementById('consentBtn');
     const blackout = document.getElementById('blackout');
 
-    // ─── CODE TO TYPE OUT ───
-    const codeLines = [
-      { text: '#include <iostream>', cls: 'info' },
-      { text: '#include <vector>', cls: 'info' },
-      { text: '#include <thread>', cls: 'info' },
-      { text: '#include <chrono>', cls: 'info' },
-      { text: 'using namespace std;', cls: 'info' },
+    // ─── PORT SCAN & SYSTEM ACCESS LOGS ───
+    const scanLines = [
+      { text: '[INFO]  Initializing network mapper v4.2...', cls: 'info' },
+      { text: '[INFO]  Loading vulnerability database (2026.07.29)...', cls: 'info' },
+      { text: '[INFO]  Scanning target: 192.168.1.0/24 subnet...', cls: 'info' },
       { text: '', cls: '' },
-      { text: 'class ExploitEngine {', cls: 'info' },
-      { text: '  private:', cls: 'info' },
-      { text: '    vector<string> payloads;', cls: 'info' },
-      { text: '    bool initialized = false;', cls: 'info' },
-      { text: '  public:', cls: 'info' },
-      { text: '    ExploitEngine() {', cls: 'info' },
-      { text: '      payloads.push_back("buffer_overflow");', cls: 'info' },
-      { text: '      payloads.push_back("heap_spray");', cls: 'info' },
-      { text: '      payloads.push_back("rop_chain");', cls: 'info' },
-      { text: '      cout << "[*] Payloads loaded: " << payloads.size() << endl;', cls: 'info' },
-      { text: '    }', cls: 'info' },
+      { text: '[INFO]  Host 192.168.1.1   is up (0.023s latency)', cls: 'info' },
+      { text: '[INFO]  Host 192.168.1.10  is up (0.045s latency)', cls: 'info' },
+      { text: '[INFO]  Host 192.168.1.25  is up (0.031s latency)', cls: 'info' },
       { text: '', cls: '' },
-      { text: '    void deploy(int target) {', cls: 'info' },
-      { text: '      cout << "[!] Deploying exploit to target: " << target << endl;', cls: 'warn' },
-      { text: '      this_thread::sleep_for(chrono::seconds(2));', cls: 'info' },
-      { text: '      cout << "[+] Shellcode injected successfully." << endl;', cls: 'ok' },
-      { text: '    }', cls: 'info' },
-      { text: '};', cls: 'info' },
+      { text: '[INFO]  Performing port scan on 192.168.1.10...', cls: 'info' },
+      { text: '[OK]    Port 22/tcp   open  → SSH  (OpenSSH 7.4p1)', cls: 'ok' },
+      { text: '[OK]    Port 80/tcp   open  → HTTP (Apache 2.4.6)', cls: 'ok' },
+      { text: '[OK]    Port 443/tcp  open  → HTTPS (mod_ssl 2.4.6)', cls: 'ok' },
+      { text: '[OK]    Port 445/tcp  open  → SMB  (Samba 4.10.16)', cls: 'ok' },
+      { text: '[OK]    Port 3389/tcp open  → RDP  (Microsoft Terminal Services)', cls: 'ok' },
       { text: '', cls: '' },
-      { text: 'int main() {', cls: 'info' },
-      { text: '  cout << "[*] Initializing exploit framework..." << endl;', cls: 'info' },
-      { text: '  ExploitEngine engine;', cls: 'info' },
-      { text: '  engine.deploy(0x7fff5fbff8a0);', cls: 'info' },
-      { text: '  cout << "[*] Connection established to remote host." << endl;', cls: 'info' },
-      { text: '  cout << "[*] Bypassing ASLR..." << endl;', cls: 'warn' },
-      { text: '  cout << "[+] ASLR bypass successful." << endl;', cls: 'ok' },
-      { text: '  cout << "[*] Triggering ROP chain..." << endl;', cls: 'warn' },
-      { text: '  cout << "[+] ROP chain executed." << endl;', cls: 'ok' },
-      { text: '  cout << "[!] SYSTEM ACCESS GRANTED." << endl;', cls: 'crit' },
-      { text: '  cout << "[*] Encrypting files..." << endl;', cls: 'warn' },
-      { text: '  for(int i = 0; i < 5; i++) {', cls: 'info' },
-      { text: '    cout << "    Encrypting file_" << i << ".docx..." << endl;', cls: 'info' },
-      { text: '    this_thread::sleep_for(chrono::milliseconds(400));', cls: 'info' },
-      { text: '  }', cls: 'info' },
-      { text: '  cout << "[+] Encryption complete." << endl;', cls: 'ok' },
-      { text: '  cout << "[!] Ransomware deployed." << endl;', cls: 'crit' },
-      { text: '  return 0;', cls: 'info' },
-      { text: '}', cls: 'info' }
+      { text: '[INFO]  Enumerating services on 192.168.1.10...', cls: 'info' },
+      { text: '[WARN]  SMBv1 detected – vulnerable to EternalBlue (MS17-010).', cls: 'warn' },
+      { text: '[WARN]  Apache 2.4.6 – vulnerable to CVE-2014-6271 (Shellshock).', cls: 'warn' },
+      { text: '[WARN]  OpenSSH 7.4 – vulnerable to CVE-2016-6210 (user enumeration).', cls: 'warn' },
+      { text: '', cls: '' },
+      { text: '[INFO]  Attempting privilege escalation via EternalBlue...', cls: 'info' },
+      { text: '[+]    SMBv1 exploit payload delivered.', cls: 'ok' },
+      { text: '[+]    Kernel shellcode executed successfully.', cls: 'ok' },
+      { text: '[+]    SYSTEM level access granted on 192.168.1.10.', cls: 'ok' },
+      { text: '', cls: '' },
+      { text: '[INFO]  Dumping local user credentials (SAM hive)...', cls: 'info' },
+      { text: '[+]    Administrator NTLM hash: 31d6cfe0d16ae931b73c59d7e0c089c0', cls: 'ok' },
+      { text: '[+]    Guest account disabled (skipping).', cls: 'ok' },
+      { text: '[+]    Found 3 local user accounts.', cls: 'ok' },
+      { text: '', cls: '' },
+      { text: '[INFO]  Pivoting to domain controller (192.168.1.1)...', cls: 'info' },
+      { text: '[INFO]  Exploiting Zerologon (CVE-2020-1472)...', cls: 'warn' },
+      { text: '[+]    Netlogon session established.', cls: 'ok' },
+      { text: '[+]    Domain Admin privileges obtained.', cls: 'ok' },
+      { text: '', cls: '' },
+      { text: '[INFO]  Establishing persistence via scheduled task...', cls: 'info' },
+      { text: '[+]    Task "SystemUpdate" created (runs every 5 mins).', cls: 'ok' },
+      { text: '[INFO]  Clearing event logs (Security.evtx)...', cls: 'info' },
+      { text: '[+]    Logs cleared successfully.', cls: 'ok' },
+      { text: '', cls: '' },
+      { text: '[CRIT]  FULL SYSTEM COMPROMISE ACHIEVED.', cls: 'crit' },
+      { text: '[CRIT]  All assets in domain are now controlled.', cls: 'crit' },
+      { text: '[INFO]  Encrypting file shares (simulated)...', cls: 'warn' },
+      { text: '    → \\\\192.168.1.1\\Finance  [ENCRYPTED]', cls: 'info' },
+      { text: '    → \\\\192.168.1.1\\HR       [ENCRYPTED]', cls: 'info' },
+      { text: '    → \\\\192.168.1.25\\Backup  [ENCRYPTED]', cls: 'info' },
+      { text: '', cls: '' },
+      { text: '[CRIT]  Ransomware payload deployed across network.', cls: 'crit' },
+      { text: '[DIM]   (This is a simulation – no actual changes were made.)', cls: 'dim' }
     ];
 
     let timeoutIds = [];
     let charTimeouts = [];
     let isRunning = false;
-    let currentLineIndex = 0;
-    let lineElement = null;
     let cursorSpan = null;
 
     // ─── Reset everything ───
@@ -417,9 +421,8 @@
       timeoutIds = [];
       charTimeouts = [];
       isRunning = false;
-      currentLineIndex = 0;
       terminal.innerHTML = '';
-      statusBadge.textContent = '● compiling';
+      statusBadge.textContent = '● scanning';
       statusBadge.style.color = '#44aa66';
       blackout.classList.remove('active');
       blackout.style.display = 'none';
@@ -471,7 +474,7 @@
         div.appendChild(cursorSpan);
 
         charIndex++;
-        const id = setTimeout(addChar, 45);
+        const id = setTimeout(addChar, 40); // smooth typing speed
         charTimeouts.push(id);
       }
 
@@ -484,28 +487,30 @@
         case 'ok': return '#00ff66';
         case 'warn': return '#88cc44';
         case 'crit': return '#ff4444';
+        case 'dim': return '#2a5a3a';
         default: return '#00cc44';
       }
     }
 
-    // ─── Run the entire code typing sequence ───
-    function runCodeTyping() {
+    // ─── Run the entire scan sequence ───
+    function runScan() {
       resetAll();
 
       let lineIndex = 0;
 
       function typeNextLine() {
-        if (lineIndex >= codeLines.length) {
-          statusBadge.textContent = '● executed';
+        if (lineIndex >= scanLines.length) {
+          statusBadge.textContent = '● compromised';
           statusBadge.style.color = '#ff4444';
           triggerBlackout();
           return;
         }
 
-        const line = codeLines[lineIndex];
+        const line = scanLines[lineIndex];
         typeLine(line, () => {
           lineIndex++;
-          const id = setTimeout(typeNextLine, 180);
+          // Slight pause between lines
+          const id = setTimeout(typeNextLine, 150);
           timeoutIds.push(id);
         });
       }
@@ -534,7 +539,7 @@
     function startSimulation() {
       consentSection.classList.add('hidden');
       simulationDiv.classList.add('active');
-      runCodeTyping();
+      runScan();
     }
 
     // ─── Reset to consent ───
@@ -544,7 +549,7 @@
       consentSection.classList.remove('hidden');
       document.getElementById('app').style.display = 'flex';
       document.getElementById('app').style.opacity = '1';
-      statusBadge.textContent = '● compiling';
+      statusBadge.textContent = '● scanning';
       statusBadge.style.color = '#44aa66';
       blackout.classList.remove('active');
       blackout.style.display = 'none';
@@ -553,9 +558,8 @@
     // ─── Event listeners ───
     consentBtn.addEventListener('click', startSimulation);
 
-    // Click on blackout to reset
+    // Click on blackout to reset (but not if clicking the URL button)
     blackout.addEventListener('click', (e) => {
-      // Don't reset if they clicked the URL button
       if (e.target.classList.contains('btn-url') || e.target.closest('.btn-url')) {
         return;
       }

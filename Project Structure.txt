@@ -1,0 +1,40 @@
+phish-sandbox/
+├── api.py                 # Flask API endpoint
+├── sandbox.py             # Container orchestration
+├── analyzer.py            # Heuristic & threat intel checks
+├── docker_sandbox/
+│   ├── Dockerfile         # Isolated browser image
+│   └── browse.js          # Playwright script (run inside container)
+├── known_brands/          # Folder with known brand logo files
+├── requirements.txt
+└── config.py
+
+Install Docker, Python 3.9+, Node.js (for local testing of browse.js if needed).
+
+Build the sandbox image: python -c "from sandbox import build_sandbox_image; build_sandbox_image()"
+
+Add some brand logo PNGs to known_brands/ (you can download from official sites; just for demo, any small image will work).
+
+Start the API: python api.py
+
+Test with a known phishing URL (use PhishTank’s “valid phishing” list) and a legitimate URL:
+
+bash
+curl -X POST http://localhost:5000/check -H "Content-Type: application/json" -d '{"url":"https://example-phish.com/login"}'
+
+You’ll get a JSON report with verdict and reasons.
+
+!!!!!!!Quick macOS‑specific setup checklist
+Install Docker Desktop for Mac (Apple Silicon or Intel) from docker.com.
+
+Ensure Docker is running (you’ll see the whale icon in the menu bar).
+
+Create a Python virtual environment and install dependencies:
+
+bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+Place your brand logo PNGs inside known_brands/.
+
+Run python api.py.
